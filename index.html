@@ -1,0 +1,1550 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SL Veículos — Sorocaba</title>
+<meta name="description" content="SL Veículos. Seleção, procedência e experiência em Sorocaba/SP.">
+<style>html,body{background:#000000 !important;color:#ffffff;}</style>
+
+<!-- ===================== FONTS ===================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- ===================== LIBS (CDN) ===================== -->
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.26/dist/lenis.css">
+<script src="https://unpkg.com/lenis@1.3.26/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<style>
+/* =========================================================
+   TOKENS — monochrome / liquid-metal system
+   ========================================================= */
+:root{
+  --bg:        #000000;
+  --bg-2:      #050505;
+  --surface:   #0B0B0C;
+  --surface-2: #121213;
+  --line:      rgba(255,255,255,.10);
+  --line-strong: rgba(255,255,255,.20);
+  --ink:       #FFFFFF;
+  --ink-dim:   #9A9A9A;
+  --ink-faint: #6B6B6B;
+  --brass:     #D8D8D8;
+  --brass-soft: rgba(216,216,216,.14);
+  --brass-line: rgba(216,216,216,.45);
+
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans:  'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --grade: grayscale(.4) contrast(1.12) brightness(.86) saturate(.9); /* shared lighting/grade for all real photo & video assets */
+
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth; background:var(--bg,#000000);}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+}
+body{
+  font-family:var(--sans);
+  background:var(--bg,#000000);
+  color:var(--text,#ffffff);
+  overflow-x:clip; /* NOT overflow-x:hidden — that silently breaks position:sticky
+                       (the Nivus pinned section) in mobile Safari/Chrome */
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  line-height:1.5;
+  position:relative;
+}
+img{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+ul{list-style:none;}
+
+::selection{ background:var(--brass); color:#000000; }
+
+/* grain overlay — subtle liquid-metal-era texture, non-interactive, animated */
+.grain{
+  position:fixed; inset:0; z-index:100; pointer-events:none;
+  opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift 8s steps(8) infinite;
+}
+@keyframes grainShift{
+  0%{ transform:translate(0,0); }
+  10%{ transform:translate(-2%,-3%); }
+  20%{ transform:translate(-4%,2%); }
+  30%{ transform:translate(2%,-4%); }
+  40%{ transform:translate(-2%,4%); }
+  50%{ transform:translate(-4%,1%); }
+  60%{ transform:translate(3%,0); }
+  70%{ transform:translate(0,3%); }
+  80%{ transform:translate(-3%,0); }
+  90%{ transform:translate(2%,2%); }
+  100%{ transform:translate(0,0); }
+}
+@media (prefers-reduced-motion: reduce){
+  .grain{ animation:none; }
+}
+@media (hover:none), (pointer:coarse){
+  .grain{ animation:none; opacity:.035; } /* static, lighter grain on touch devices */
+}
+
+/* visible focus states */
+a:focus-visible, button:focus-visible, input:focus-visible{
+  outline:2px solid var(--brass);
+  outline-offset:3px;
+}
+
+.wrap{
+  width:100%;
+  max-width:1360px;
+  margin:0 auto;
+  padding-inline:clamp(20px, 5vw, 64px);
+}
+
+.eyebrow{
+  font-size:12.5px;
+  letter-spacing:.06em;
+  color:var(--ink-faint);
+}
+
+.serif{ font-family:var(--serif); font-style:italic; font-weight:400; }
+
+.btn{
+  position:relative; isolation:isolate; overflow:hidden;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  height:44px;
+  padding:0 24px;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:-.01em;
+  border-radius:6px;
+  white-space:nowrap;
+  transition:background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
+}
+.btn::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.45) 48%, transparent 76%);
+  transform:translateX(-130%);
+  transition:transform .65s ease;
+  pointer-events:none;
+}
+.btn:hover::after{ transform:translateX(130%); }
+.btn-solid{
+  background:linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
+  color:#111;
+  border:1px solid #fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
+}
+.btn-solid:hover{
+  background:linear-gradient(180deg, #fff 0%, #f3f6ff 42%, #d5def2 100%);
+  border-color:#f2f6ff;
+  box-shadow:inset 0 1px 0 #fff, 0 0 22px rgba(186,208,255,.35), 0 8px 18px rgba(255,255,255,.12);
+}
+.btn-outline{
+  background:linear-gradient(135deg, rgba(255,255,255,.1), rgba(0,0,0,.45) 50%, rgba(160,175,200,.08));
+  border:1px solid rgba(198,198,198,.45);
+  color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+}
+.btn-outline:hover{
+  background:linear-gradient(135deg, rgba(210,225,255,.18), rgba(0,0,0,.35) 48%, rgba(180,195,220,.16));
+  border-color:rgba(220,230,255,.75);
+  color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 0 20px rgba(170,200,255,.22);
+}
+
+/* =========================================================
+   CUSTOM CURSOR (desktop only)
+   ========================================================= */
+.cursor{
+  position:fixed; top:0; left:0; z-index:9999;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--brass);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:difference;
+  transition:width .25s var(--ease), height .25s var(--ease), background .25s var(--ease);
+}
+.cursor-label{
+  position:fixed; top:0; left:0; z-index:9999;
+  pointer-events:none;
+  font-size:11px; letter-spacing:.08em;
+  color:var(--bg);
+  background:var(--ink);
+  padding:6px 10px;
+  border-radius:20px;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.7);
+  transition:opacity .25s var(--ease), transform .25s var(--ease);
+  white-space:nowrap;
+}
+body.has-cursor .cursor-label.show{ opacity:1; transform:translate(-50%, 22px) scale(1); }
+@media (hover:none), (pointer:coarse){
+  .cursor, .cursor-label{ display:none !important; }
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:26px 0;
+  transition:padding .4s var(--ease), background-color .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
+}
+header.scrolled{
+  padding:14px 0;
+  background:rgba(10,10,11,.7);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom-color:var(--line);
+}
+.nav-inner{
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo{
+  font-family:var(--serif); font-style:italic;
+  font-size:19px;
+  letter-spacing:.01em;
+}
+.logo b{ color:var(--ink); font-weight:400; font-style:normal; opacity:.6; }
+.nav-links{
+  display:flex; gap:8px;
+  font-size:14px;
+  letter-spacing:-.01em;
+  color:#f3f3f3;
+}
+.nav-links a{
+  position:relative; overflow:hidden;
+  height:40px; padding:0 18px;
+  display:inline-flex; align-items:center;
+  border-radius:7px;
+  border:1px solid rgba(198,198,198,.55);
+  background:linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
+  transition:background .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.nav-links a::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.16) 50%, transparent 70%);
+  transform:translateX(-120%);
+  transition:transform .6s ease;
+}
+.nav-links a:hover{
+  border-color:rgba(235,235,235,.9);
+  background:linear-gradient(105deg, #111 0%, #3a3a3a 45%, #6a6a6a 100%);
+  box-shadow:0 0 18px rgba(200,210,230,.18);
+}
+.nav-links a:hover::before{ transform:translateX(120%); }
+.nav-right{ display:flex; align-items:center; gap:16px; }
+.nav-cta{
+  height:40px; padding:0 20px; font-size:13.5px; border-radius:6px;
+  display:flex; align-items:center; gap:8px;
+  background:linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
+  color:#111; border:1px solid #fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
+  transition:box-shadow .3s, background .3s;
+}
+.nav-cta:hover{
+  background:linear-gradient(180deg, #fff 0%, #f3f6ff 42%, #d5def2 100%);
+  box-shadow:inset 0 1px 0 #fff, 0 0 22px rgba(186,208,255,.35);
+}
+.menu-btn{ display:none; }
+
+@media (max-width: 880px){
+  .nav-links{ display:none; }
+  .nav-cta span{ display:none; }
+  .menu-btn{ display:flex; }
+}
+
+/* fullscreen mobile menu */
+.mobile-menu{
+  position:fixed; inset:0; z-index:600;
+  background:var(--bg-2);
+  display:flex; flex-direction:column;
+  padding:26px clamp(20px,5vw,64px);
+  transform:translateY(-100%);
+  transition:transform .5s var(--ease);
+}
+.mobile-menu.open{ transform:translateY(0); }
+.mobile-menu-top{ display:flex; justify-content:space-between; align-items:center; }
+.mobile-menu nav{ margin-top:14vh; display:flex; flex-direction:column; gap:18px; }
+.mobile-menu nav a{ font-family:var(--serif); font-size:38px; color:var(--ink); }
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero{
+  position:relative; height:100svh; min-height:640px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  overflow:hidden; background:#000;
+}
+.hero-media{ position:absolute; inset:0; opacity:0; }
+.hero-media video{
+  width:100%; height:100%; object-fit:cover;
+  transform:scale(1.08);
+}
+/* no overlay/scrim on the hero video per spec — legibility handled via text-shadow instead */
+.hero-fallback{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 30% 20%, #1c1c1c 0%, transparent 55%),
+    linear-gradient(160deg, #0c0c0c 0%, #000000 60%);
+}
+/* Static hero photo — sits behind the video, visible immediately, no white flash.
+   ⚠️ PLACEHOLDER: replace hero-photo.jpg with a real photo of SL Veículos'
+   own inventory or storefront before this site goes live. */
+.hero-photo{
+  position:absolute; inset:0; overflow:hidden;
+}
+.hero-photo img{
+  width:100%; height:100%; object-fit:cover; object-position:center 40%;
+  filter:var(--grade);
+  transform:scale(1.06);
+  will-change:transform;
+}
+.hero-photo::after{
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.55) 100%),
+    linear-gradient(0deg, rgba(0,0,0,.75) 0%, transparent 45%);
+}
+
+.hero-inner{
+  position:relative; z-index:2; padding-bottom:9vh;
+  display:flex; flex-direction:column; align-items:flex-start;
+  text-shadow:0 2px 24px rgba(0,0,0,.55), 0 1px 4px rgba(0,0,0,.6);
+}
+.hero-badge{
+  display:inline-flex; align-items:center; gap:8px;
+  margin-bottom:22px; padding:9px 15px; border-radius:5px;
+  background:linear-gradient(90deg, #7d7d7d 0%, #2a2a2a 52%, #0a0a0a 100%);
+  color:#f2f2f2; font-size:12.5px; font-weight:400; letter-spacing:-.01em;
+  overflow:hidden;
+}
+.hero-badge svg{ filter:drop-shadow(0 0 3px rgba(255,255,255,.45)); }
+
+.hero-title{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(46px, 8.6vw, 118px);
+  line-height:.98;
+  letter-spacing:-.01em;
+}
+.hero-title .line{ overflow:hidden; }
+.hero-title .line span{ display:inline-block; }
+.hero-title em{ font-style:italic; color:var(--ink-dim); font-weight:400; }
+
+.hero-sub{
+  margin-top:26px;
+  max-width:420px;
+  font-size:16px;
+  color:var(--ink-dim);
+  overflow:hidden;
+}
+.hero-sub span{ display:block; transform:translateY(110%); }
+
+.hero-cta{
+  margin-top:40px;
+  display:flex; gap:16px; flex-wrap:wrap;
+  overflow:hidden;
+}
+.hero-cta .inner{ display:flex; gap:16px; transform:translateY(140%); }
+
+.scroll-indicator{
+  position:absolute; right:clamp(20px,5vw,64px); bottom:36px; z-index:2;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  opacity:0;
+}
+.scroll-indicator .track{
+  width:1px; height:52px; background:var(--line-strong); position:relative; overflow:hidden;
+}
+.scroll-indicator .track::after{
+  content:''; position:absolute; top:-100%; left:0; width:100%; height:100%;
+  background:var(--brass);
+  animation:scrollTrack 2.2s var(--ease) infinite;
+}
+@keyframes scrollTrack{ to{ top:100%; } }
+.scroll-indicator span{
+  writing-mode:vertical-rl; font-size:11px; letter-spacing:.14em; color:var(--ink-faint);
+}
+@media (prefers-reduced-motion: reduce){
+  .scroll-indicator .track::after{ animation:none; top:0; }
+}
+
+/* =========================================================
+   SECTION SCAFFOLDING
+   ========================================================= */
+section{ position:relative; }
+.section-pad{ padding-block: clamp(90px, 13vw, 180px); }
+.section-head{
+  display:flex; justify-content:space-between; align-items:flex-end; gap:40px;
+  margin-bottom:64px; flex-wrap:wrap;
+}
+.section-num{ font-size:12.5px; color:var(--ink-faint); letter-spacing:.08em; margin-bottom:16px; }
+.section-title{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(30px, 4vw, 54px); line-height:1.06;
+  max-width:640px;
+}
+.section-desc{ max-width:340px; color:var(--ink-dim); font-size:15px; text-align:right; }
+@media (max-width:700px){ .section-desc{ text-align:left; } }
+
+/* =========================================================
+   CINEMATIC STATEMENT SECTION
+   ========================================================= */
+.cinematic{
+  background:var(--bg);
+  padding-block:clamp(120px,18vw,240px);
+  text-align:center;
+}
+.cinematic-title{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(34px, 7vw, 84px);
+  line-height:1.08;
+}
+.cinematic-title .word{ display:inline-block; opacity:.14; transition:opacity .1s; }
+.cinematic-title .accent{ color:var(--brass); }
+.cinematic-follow{
+  margin-top:48px;
+  font-family:var(--serif); font-style:italic; font-weight:400;
+  font-size:clamp(17px,2vw,22px);
+  color:var(--ink-dim);
+  line-height:1.9;
+  opacity:0;
+}
+
+/* =========================================================
+   SHOWROOM
+   ========================================================= */
+.showroom{ background:var(--bg-2); }
+
+.filters{
+  display:flex; flex-wrap:wrap; gap:10px 12px; margin-bottom:52px;
+}
+.filter-group{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  padding:9px 17px; font-size:12.5px; letter-spacing:.02em;
+  border:1px solid var(--line-strong); border-radius:20px; color:var(--ink-dim);
+  transition:all .3s var(--ease);
+}
+.chip.active, .chip:hover{ border-color:var(--brass); color:var(--brass); background:var(--brass-soft); }
+
+.rail{
+  display:flex; gap:20px; overflow-x:auto; padding-bottom:16px;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{ display:none; }
+
+.vcard{
+  scroll-snap-align:start;
+  flex:0 0 clamp(270px, 32vw, 380px);
+  background:var(--surface);
+  border:1px solid var(--line);
+  overflow:hidden;
+  transform-style:preserve-3d;
+  will-change:transform;
+  transition:border-color .4s var(--ease);
+}
+.vcard:hover{ border-color:var(--brass-line); }
+.vcard-media{
+  position:relative; aspect-ratio:4/3; overflow:hidden;
+  background:
+    repeating-linear-gradient(135deg, #1b1b1e 0 2px, #19191c 2px 4px),
+    linear-gradient(160deg,#1c1c1f,#101012);
+}
+.vcard-media .ico{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-faint); opacity:.5;
+}
+.vcard-media .ico svg{ width:42px; height:42px; }
+.vcard-media .tag{
+  position:absolute; top:14px; left:14px;
+  font-size:10.5px; letter-spacing:.08em; color:var(--ink-faint);
+  border:1px solid var(--line-strong); padding:5px 10px; border-radius:20px;
+  background:rgba(10,10,11,.5); backdrop-filter:blur(6px);
+}
+.vcard-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.vcard-body{ padding:22px; }
+.vcard-year{ font-size:12px; color:var(--brass); letter-spacing:.05em; margin-bottom:6px; }
+.vcard-name{ font-family:var(--serif); font-size:21px; margin-bottom:14px; }
+.vcard-specs{
+  display:flex; flex-wrap:wrap; gap:6px 14px;
+  font-size:12.5px; color:var(--ink-faint);
+  padding-top:14px; border-top:1px solid var(--line);
+}
+.vcard-price{
+  margin-top:16px; display:flex; justify-content:space-between; align-items:center;
+}
+.vcard-price b{ font-family:var(--serif); font-size:18px; }
+.vcard-link{ font-size:12px; letter-spacing:.04em; color:var(--ink-dim); display:flex; align-items:center; gap:5px; }
+.vcard:hover .vcard-link{ color:var(--brass); }
+
+.rail-empty{ color:var(--ink-faint); font-size:14px; padding:40px 0; }
+
+/* =========================================================
+   TRUST / PROCEDÊNCIA
+   ========================================================= */
+.trust{ background:var(--bg); }
+.trust-grid{ display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:start; }
+@media (max-width:860px){ .trust-grid{ grid-template-columns:1fr; gap:44px; } }
+.trust-title{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(34px, 5vw, 62px); line-height:1.05;
+}
+.trust-list{ display:flex; flex-direction:column; }
+.trust-item{
+  display:flex; align-items:center; gap:20px;
+  padding:22px 0; border-bottom:1px solid var(--line);
+  opacity:0; transform:translateX(24px);
+}
+.trust-item .idx{ font-size:12px; color:var(--ink-faint); width:24px; }
+.trust-item .label{ font-size:16px; }
+.trust-item svg{ width:16px; height:16px; color:var(--brass); margin-left:auto; }
+
+/* =========================================================
+   FEATURED VEHICLE (interactive scroll section)
+   ========================================================= */
+.feature{
+  background:#000; color:var(--ink);
+  height:700vh; /* ~600px of scroll per second of the 10s clip (industry-common pacing) */
+  position:relative;
+}
+.feature-pin{
+  position:sticky; top:0; height:100vh;
+  display:flex; align-items:center; overflow:hidden;
+}
+.feature-media{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 70% 50%, #1a1a1a 0%, transparent 60%),
+    linear-gradient(120deg, #0c0c0d, #000 70%);
+}
+.feature-media::before{
+  content:'';
+  position:absolute; inset:0; z-index:1;
+  background:
+    linear-gradient(0deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.15) 45%, rgba(0,0,0,.5) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.4) 0%, transparent 35%);
+  pointer-events:none;
+}
+.feature-video{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center 55%;
+  filter:var(--grade);
+}
+.feature-media .plate{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+}
+.feature-media .plate svg{ width:min(60vw,520px); height:auto; color:var(--ink-faint); }
+.feature-content{ position:relative; z-index:2; width:100%; }
+.feature-eyebrow{ color:var(--brass); font-size:13px; letter-spacing:.1em; margin-bottom:18px; }
+.feature-name{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(38px,7vw,96px); line-height:.98;
+}
+.feature-specs{
+  margin-top:34px; display:flex; gap:40px; flex-wrap:wrap;
+}
+.feature-specs div{ font-size:13px; color:var(--ink-faint); }
+.feature-specs b{ display:block; font-family:var(--serif); font-size:20px; color:var(--ink); margin-top:4px; }
+.feature-cta{ margin-top:44px; }
+
+/* =========================================================
+   FINANCING
+   ========================================================= */
+.financing{ background:var(--bg-2); }
+.fin-grid{ display:grid; grid-template-columns:1fr 1fr; gap:70px; }
+@media (max-width:900px){ .fin-grid{ grid-template-columns:1fr; gap:44px; } }
+.fin-panel{ background:var(--surface); border:1px solid var(--line); padding:clamp(28px,4vw,48px); }
+.field{ margin-bottom:26px; }
+.field label{ display:block; font-size:12.5px; color:var(--ink-faint); letter-spacing:.03em; margin-bottom:10px; }
+.field input[type=range]{
+  width:100%; appearance:none; height:2px; background:var(--line-strong); outline:none;
+}
+.field input[type=range]::-webkit-slider-thumb{
+  appearance:none; width:15px; height:15px; border-radius:50%; background:var(--brass); cursor:pointer;
+}
+.field-value{ font-family:var(--serif); font-size:24px; margin-top:8px; }
+.term-group{ display:flex; gap:10px; }
+.term-btn{
+  flex:1; padding:12px; text-align:center; border:1px solid var(--line-strong); font-size:13.5px;
+  transition:all .3s;
+}
+.term-btn.active{ border-color:var(--brass); color:var(--brass); background:var(--brass-soft); }
+.fin-result{
+  margin-top:30px; padding-top:26px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:flex-end;
+}
+.fin-result .amount{ font-family:var(--serif); font-size:36px; }
+.fin-result .note{ font-size:11.5px; color:var(--ink-faint); max-width:220px; text-align:right; }
+
+/* =========================================================
+   TRADE-IN
+   ========================================================= */
+.tradein{ background:var(--bg); }
+.tradein-flow{
+  display:flex; flex-direction:column; align-items:flex-start; gap:0; margin:56px 0 60px;
+}
+.flow-step{
+  display:flex; align-items:center; gap:22px; padding:20px 0;
+  border-bottom:1px solid var(--line); width:100%; max-width:520px;
+  opacity:0; transform:translateY(18px);
+}
+.flow-step .num{ font-family:var(--serif); font-size:26px; color:var(--brass); width:44px; }
+.flow-step .txt{ font-size:17px; }
+.flow-step .sub{ font-size:13px; color:var(--ink-faint); margin-top:2px; }
+
+/* =========================================================
+   REVIEWS
+   ========================================================= */
+.reviews{ background:var(--bg-2); }
+.reviews-top{ display:flex; align-items:baseline; gap:22px; flex-wrap:wrap; margin-bottom:50px; }
+.reviews-score{ font-family:var(--serif); font-size:clamp(60px,8vw,110px); line-height:1; color:var(--brass); }
+.reviews-meta{ font-size:14px; color:var(--ink-dim); }
+.reviews-meta .stars{ color:var(--brass); letter-spacing:2px; margin-bottom:6px; }
+.reviews-rail{ display:flex; gap:20px; overflow-x:auto; scrollbar-width:none; }
+.reviews-rail::-webkit-scrollbar{ display:none; }
+.review-card{
+  flex:0 0 clamp(260px,30vw,340px);
+  border:1px solid var(--line); padding:26px; background:var(--surface);
+  display:flex; flex-direction:column; gap:16px; min-height:170px; justify-content:space-between;
+}
+.review-placeholder{ color:var(--ink-faint); font-size:13.5px; line-height:1.7; }
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+.location{ background:var(--bg); }
+.loc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line); }
+@media (max-width:860px){ .loc-grid{ grid-template-columns:1fr; } }
+.loc-info{ padding:clamp(34px,5vw,60px); display:flex; flex-direction:column; justify-content:center; }
+.loc-title{ font-family:var(--serif); font-size:clamp(28px,4vw,44px); line-height:1.08; margin-bottom:28px; }
+.loc-row{ display:flex; gap:14px; padding:16px 0; border-top:1px solid var(--line); }
+.loc-row svg{ width:17px; height:17px; color:var(--brass); flex-shrink:0; margin-top:2px; }
+.loc-row span{ font-size:15px; color:var(--ink-dim); }
+.loc-map{ position:relative; min-height:380px; background:#101012; }
+.loc-map iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter:var(--grade); }
+
+/* =========================================================
+   FINAL CTA
+   ========================================================= */
+.final-cta{
+  background:#000; text-align:center;
+  padding-block:clamp(120px,18vw,220px);
+  position:relative; overflow:hidden;
+}
+.final-cta::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 100%, rgba(176,138,78,.10), transparent 60%);
+}
+.final-title{
+  position:relative; z-index:1;
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(32px,6.4vw,78px); line-height:1.08;
+}
+.final-title em{ font-style:italic; color:var(--ink-dim); }
+.final-cta .hero-cta{ position:relative; z-index:1; justify-content:center; margin-top:44px; overflow:visible; }
+.final-cta .inner{ transform:none; }
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+footer{ background:var(--bg); border-top:1px solid var(--line); padding-block:60px; }
+.footer-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px; }
+.footer-brand .logo{ margin-bottom:14px; }
+.footer-brand p{ color:var(--ink-faint); font-size:13px; max-width:260px; }
+.footer-cols{ display:flex; gap:70px; flex-wrap:wrap; }
+.footer-col h4{ font-size:12px; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:16px; }
+.footer-col a, .footer-col span{ display:block; font-size:14px; color:var(--ink-dim); margin-bottom:10px; }
+.footer-col a:hover{ color:var(--brass); }
+.footer-bottom{
+  margin-top:50px; padding-top:24px; border-top:1px solid var(--line);
+  font-size:12px; color:var(--ink-faint);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+}
+
+/* =========================================================
+   WHATSAPP FLOATING BUTTON
+   ========================================================= */
+.wa-btn{
+  position:fixed; right:26px; bottom:26px; z-index:400;
+  width:56px; height:56px; border-radius:50%;
+  background:var(--ink); color:#0A0A0B;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  transition:background .3s, transform .3s;
+}
+.wa-btn:hover{ background:var(--brass); transform:translateY(-2px); }
+
+/* =========================================================
+   SCROLL PROGRESS BAR
+   ========================================================= */
+.progress-bar{
+  position:fixed; top:0; left:0; height:2px; width:100%; z-index:700;
+  background:var(--line);
+  pointer-events:none;
+}
+.progress-bar .fill{
+  height:100%; width:0%;
+  background:var(--brass);
+  transform-origin:left;
+}
+
+@media (max-width:900px){
+  .section-pad{ padding-block:76px; }
+  .feature{ height:100vh; }
+}
+</style>
+</head>
+<body style="background:#000;color:#fff">
+<div class="grain" aria-hidden="true"></div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-label" id="cursorLabel"></div>
+
+<!-- SCROLL PROGRESS -->
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+
+<!-- ===================== HEADER ===================== -->
+<header id="siteHeader">
+  <div class="wrap nav-inner">
+    <a href="#top" class="logo">SL <b>VEÍCULOS</b></a>
+    <nav class="nav-links">
+      <a href="#showroom" data-cursor="ver">Estoque</a>
+      <a href="#experiencia" data-cursor="ver">Experiência</a>
+      <a href="#sobre" data-cursor="ver">Sobre</a>
+      <a href="#contato" data-cursor="ver">Contato</a>
+    </nav>
+    <div class="nav-right">
+      <a class="nav-cta" href="#contato" data-cursor="abrir">
+        <span>WhatsApp</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8l4 4-4 4M21 12H3"/></svg>
+      </a>
+      <button class="menu-btn" id="menuOpen" aria-label="Abrir menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-top">
+    <span class="logo">SL <b>VEÍCULOS</b></span>
+    <button id="menuClose" aria-label="Fechar menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav>
+    <a href="#showroom">Estoque</a>
+    <a href="#experiencia">Experiência</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#contato">Contato</a>
+  </nav>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="top">
+  <div class="hero-photo" id="heroPhoto">
+    <img src="hero-photo.jpg" alt="" aria-hidden="true">
+  </div>
+  <div class="hero-media" id="heroMedia">
+    <video id="heroVideo" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+  </div>
+  <div class="hero-fallback" id="heroFallback" style="display:none;"></div>
+
+  <div class="wrap hero-inner">
+    <div class="hero-badge" id="heroBadge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/></svg>
+      Sorocaba / SP
+    </div>
+    <h1 class="hero-title">
+      <div class="line"><span>O SEU PRÓXIMO CARRO</span></div>
+      <div class="line"><span>ESTÁ <em>AQUI</em>.</span></div>
+    </h1>
+    <p class="hero-sub"><span>Veículos selecionados para quem não aceita qualquer carro.</span></p>
+    <div class="hero-cta">
+      <div class="inner">
+        <a href="#showroom" class="btn btn-solid" data-cursor="ver">Ver estoque</a>
+        <a href="#contato" class="btn btn-outline" data-cursor="abrir">Falar com a SL</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator" id="scrollIndicator">
+    <span>ROLE</span>
+    <div class="track"></div>
+  </div>
+</section>
+
+<!-- ===================== CINEMATIC STATEMENT ===================== -->
+<section class="cinematic">
+  <div class="wrap">
+    <h2 class="cinematic-title" id="cineTitle">
+      <span class="word">UM</span> <span class="word">CARRO</span> <span class="word">NÃO</span> <span class="word">É</span><br>
+      <span class="word">APENAS</span> <span class="word accent">UM</span> <span class="word accent">CARRO</span><span class="word accent">.</span>
+    </h2>
+    <p class="cinematic-follow" id="cineFollow">
+      É onde você vai chegar.<br>
+      Quem você vai buscar.<br>
+      A viagem que vai lembrar.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== SHOWROOM ===================== -->
+<section class="showroom section-pad" id="showroom">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-num">01 — ESTOQUE</div>
+        <h2 class="section-title serif">Encontre o seu.</h2>
+      </div>
+      <p class="section-desc">Cada veículo passa por avaliação de procedência antes de chegar até você.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group" id="priceFilters">
+        <button class="chip active" data-price="all">Todos os preços</button>
+        <button class="chip" data-price="60">Até R$ 60 mil</button>
+        <button class="chip" data-price="90">Até R$ 90 mil</button>
+        <button class="chip" data-price="120">Até R$ 120 mil</button>
+        <button class="chip" data-price="9999">Acima de R$ 120 mil</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="filter-group" id="catFilters">
+        <button class="chip active" data-cat="all">Todas as categorias</button>
+        <button class="chip" data-cat="SUV">SUV</button>
+        <button class="chip" data-cat="Sedan">Sedã</button>
+        <button class="chip" data-cat="Hatch">Hatch</button>
+        <button class="chip" data-cat="Pickup">Picape</button>
+        <button class="chip" data-cat="Automático">Automático</button>
+      </div>
+    </div>
+
+    <div class="rail" id="vehicleRail"></div>
+  </div>
+</section>
+
+<!-- ===================== TRUST / PROCEDÊNCIA ===================== -->
+<section class="trust section-pad" id="sobre">
+  <div class="wrap trust-grid">
+    <div>
+      <div class="section-num">02 — PROCEDÊNCIA</div>
+      <h2 class="trust-title serif">
+        Antes de entregar as chaves, a gente olha cada detalhe.
+      </h2>
+    </div>
+    <div class="trust-list" id="trustList">
+      <div class="trust-item"><span class="idx">01</span><span class="label">Laudo cautelar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+      <div class="trust-item"><span class="idx">02</span><span class="label">Procedência verificada</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+      <div class="trust-item"><span class="idx">03</span><span class="label">Revisões em dia</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+      <div class="trust-item"><span class="idx">04</span><span class="label">Documentação completa</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+      <div class="trust-item"><span class="idx">05</span><span class="label">Garantia</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+      <div class="trust-item"><span class="idx">06</span><span class="label">Pronta entrega</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12l5 5L20 7"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FEATURED VEHICLE (pinned scroll) ===================== -->
+<section class="feature" id="experiencia">
+  <div class="feature-pin">
+    <div class="feature-media">
+      <video id="featureVideo" class="feature-video" src="nivus-feature.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+      <div class="plate" id="featurePlate">
+        <svg viewBox="0 0 200 90" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M18 62 C18 40 40 26 100 26 C160 26 182 40 182 62 L182 68 L18 68 Z"/>
+          <circle cx="52" cy="68" r="11"/><circle cx="148" cy="68" r="11"/>
+          <path d="M40 44 L70 30 L130 30 L160 44"/>
+        </svg>
+      </div>
+    </div>
+    <div class="wrap feature-content">
+      <div class="feature-eyebrow">2026 · VOLKSWAGEN</div>
+      <h2 class="feature-name serif">Nivus</h2>
+      <div class="feature-specs">
+        <div>Câmbio<b>Automático</b></div>
+        <div>A partir de<b>R$ 139.900</b></div>
+        <div>Categoria<b>SUV Compacto</b></div>
+      </div>
+      <div class="feature-cta">
+        <a href="#contato" class="btn btn-outline" data-cursor="ver">Ver detalhes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINANCING ===================== -->
+<section class="financing section-pad">
+  <div class="wrap fin-grid">
+    <div>
+      <div class="section-num">03 — FINANCIAMENTO</div>
+      <h2 class="section-title serif">Simule antes de decidir.</h2>
+      <p style="color:var(--ink-dim); margin-top:22px; max-width:380px; font-size:15px;">
+        Uma estimativa rápida para você se organizar. As condições reais dependem da instituição financeira e da análise de crédito.
+      </p>
+    </div>
+
+    <div class="fin-panel">
+      <div class="field">
+        <label>Valor do veículo</label>
+        <input type="range" id="finValue" min="30000" max="250000" step="1000" value="89900">
+        <div class="field-value serif" id="finValueOut">R$ 89.900</div>
+      </div>
+      <div class="field">
+        <label>Entrada</label>
+        <input type="range" id="finDown" min="0" max="150000" step="500" value="20000">
+        <div class="field-value serif" id="finDownOut">R$ 20.000</div>
+      </div>
+      <div class="field">
+        <label>Prazo</label>
+        <div class="term-group">
+          <button class="term-btn" data-term="36">36x</button>
+          <button class="term-btn active" data-term="48">48x</button>
+          <button class="term-btn" data-term="60">60x</button>
+        </div>
+      </div>
+      <div class="fin-result">
+        <div>
+          <div style="font-size:12px; color:var(--ink-faint); margin-bottom:6px;">Parcela estimada</div>
+          <div class="amount" id="finResult">R$ 1.940</div>
+        </div>
+        <div class="note">Simulação ilustrativa, sem juros de instituição financeira aplicados. Valores reais sob consulta.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TRADE-IN ===================== -->
+<section class="tradein section-pad">
+  <div class="wrap">
+    <div class="section-num">04 — TROCA</div>
+    <h2 class="section-title serif">Tem um carro para trocar?</h2>
+
+    <div class="tradein-flow" id="tradeFlow">
+      <div class="flow-step">
+        <span class="num">01</span>
+        <div><div class="txt">Seu carro</div><div class="sub">Conte pra gente o que você tem hoje</div></div>
+      </div>
+      <div class="flow-step">
+        <span class="num">02</span>
+        <div><div class="txt">Avaliação</div><div class="sub">Análise transparente do veículo</div></div>
+      </div>
+      <div class="flow-step">
+        <span class="num">03</span>
+        <div><div class="txt">Negociação</div><div class="sub">Condições claras, sem surpresas</div></div>
+      </div>
+      <div class="flow-step">
+        <span class="num">04</span>
+        <div><div class="txt">Seu próximo carro</div><div class="sub">Saia dirigindo no mesmo dia</div></div>
+      </div>
+    </div>
+
+    <a href="#contato" class="btn btn-solid" data-cursor="abrir">Quero avaliar meu carro</a>
+  </div>
+</section>
+
+<!-- ===================== REVIEWS ===================== -->
+<section class="reviews section-pad">
+  <div class="wrap">
+    <div class="reviews-top">
+      <div class="reviews-score serif">4,7</div>
+      <div class="reviews-meta">
+        <div class="stars">★★★★★</div>
+        89 avaliações no Google
+      </div>
+    </div>
+
+    <div class="reviews-rail" id="reviewsRail">
+      <div class="review-card">
+        <p class="review-placeholder">"Atendimento muito bom, carros novos com bom preço, super recomendo."</p>
+        <div class="stars" style="font-size:13px;">★★★★★</div>
+      </div>
+      <div class="review-card">
+        <p class="review-placeholder">"Vinícius me atendeu muito bem, valor e estado do veículo realmente melhor que o da concorrência."</p>
+        <div class="stars" style="font-size:13px;">★★★★★</div>
+      </div>
+      <div class="review-card">
+        <p class="review-placeholder">"Melhor loja de veículos de Sorocaba. Sempre faço negócios — compra, venda e troca — e sou sempre muito bem atendido."</p>
+        <div class="stars" style="font-size:13px;">★★★★★</div>
+      </div>
+      <div class="review-card">
+        <p class="review-placeholder">"Fui comprar um carro e o atendimento foi espetacular. Vinícius e Severino me atenderam muito bem."</p>
+        <div class="stars" style="font-size:13px;">★★★★★</div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:12px; color:var(--ink-faint);">Avaliações reais de clientes, via Google.</p>
+  </div>
+</section>
+
+<!-- ===================== LOCATION ===================== -->
+<section class="location section-pad" id="contato">
+  <div class="wrap">
+    <div class="section-num" style="margin-bottom:20px;">05 — VISITE</div>
+    <div class="loc-grid">
+      <div class="loc-info">
+        <h2 class="loc-title serif">Venha conhecer<br>o seu próximo carro.</h2>
+
+        <div class="loc-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s7-7.2 7-12a7 7 0 10-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <span>Av. Itavuvu, 2695 — Jardim Santa Cecília<br>Sorocaba — SP</span>
+        </div>
+        <div class="loc-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .7 3a2 2 0 01-.4 2.1L8 10.3a16 16 0 006 6l1.5-1.5a2 2 0 012.1-.4c1 .4 2 .6 3 .7a2 2 0 011.7 2z"/></svg>
+          <span>(15) 3226-1930</span>
+        </div>
+        <div class="loc-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Segunda a sexta, 8h às 18h · Sábado, 8h às 14h · Domingo, fechado</span>
+        </div>
+
+        <a href="https://maps.app.goo.gl/uF4Y8Yt8t7nTbrL46" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:34px; align-self:flex-start;" data-cursor="abrir">
+          Como chegar
+        </a>
+      </div>
+      <div class="loc-map">
+        <iframe
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=Av.+Itavuvu,+2695,+Jardim+Santa+Cec%C3%ADlia,+Sorocaba+-+SP&output=embed"
+          title="Mapa — SL Veículos, Av. Itavuvu 2695, Sorocaba/SP">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINAL CTA ===================== -->
+<section class="final-cta">
+  <div class="wrap">
+    <h2 class="final-title serif">
+      Talvez o carro<br>que você procura<br><em>já esteja aqui.</em>
+    </h2>
+    <div class="hero-cta">
+      <div class="inner">
+        <a href="#showroom" class="btn btn-solid" data-cursor="ver">Ver estoque</a>
+        <a href="#contato" class="btn btn-outline" data-cursor="abrir">Falar com a SL</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">SL <b>VEÍCULOS</b></div>
+        <p>Seleção, procedência e experiência em Sorocaba/SP.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>NAVEGAÇÃO</h4>
+          <a href="#showroom">Estoque</a>
+          <a href="#experiencia">Experiência</a>
+          <a href="#sobre">Sobre</a>
+          <a href="#contato">Contato</a>
+        </div>
+        <div class="footer-col">
+          <h4>CONTATO</h4>
+          <span>Av. Itavuvu, 2695</span>
+          <span>Jardim Santa Cecília, Sorocaba — SP</span>
+          <a href="tel:+551532261930">(15) 3226-1930</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 SL Veículos.</span>
+      <span>4,7 / 5 · 89 avaliações no Google</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WHATSAPP -->
+<a class="wa-btn" id="waBtn" href="#" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" data-cursor="abrir">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.8 11.8 0 0012 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 005.6 1.4h.1c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.1-3.5-8.3zM12 21.3h-.1a9.8 9.8 0 01-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 01-1.5-5.2C2 6.4 6.5 2 12 2a9.8 9.8 0 016.9 2.9A9.7 9.7 0 0121.9 12c0 5.5-4.5 9.9-9.9 9.3z"/></svg>
+</a>
+
+<script>
+/* =========================================================
+   CONFIG — replace with real data as it becomes available
+   ========================================================= */
+const CONFIG = {
+  // ⚠️ Este é o telefone fixo divulgado pela SL Veículos. Confirme se este
+  // número tem WhatsApp Business ativo antes de publicar; caso não tenha,
+  // substitua por um número móvel com WhatsApp habilitado no formato 55DDDNUMERO.
+  whatsappNumber: '551532261930',
+  whatsappMessage: 'Olá! Vi o site da SL Veículos e gostaria de mais informações.'
+};
+document.getElementById('waBtn').href =
+  `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(CONFIG.whatsappMessage)}`;
+
+/* =========================================================
+   VEHICLE DATA — only fields confirmed are shown.
+   Add `image` (real photo URL) per vehicle when available;
+   until then a neutral placeholder is rendered.
+   ========================================================= */
+const vehicles = [
+  { brand:'Volkswagen', model:'Nivus', year:2026, category:'SUV', transmission:'Automático', priceBand:120, price:null, image:null },
+  { brand:'Honda', model:'HR-V', year:2025, category:'SUV', transmission:'Automático', priceBand:120, price:null, image:null },
+  { brand:'Fiat', model:'Fastback', year:2024, category:'SUV', transmission:'Automático', priceBand:120, price:null, image:null },
+  { brand:'Fiat', model:'Fiorino', year:2024, category:'Hatch', transmission:null, priceBand:90, price:null, image:null },
+  { brand:'Volkswagen', model:'T-Cross', year:2023, category:'SUV', transmission:'Automático', priceBand:120, price:null, image:null },
+  { brand:'Fiat', model:'Strada', year:2023, category:'Pickup', transmission:null, priceBand:90, price:null, image:null },
+  { brand:'Hyundai', model:'Creta', year:2021, category:'SUV', transmission:'Automático', priceBand:90, price:null, image:null },
+  { brand:'Toyota', model:'Corolla', year:2019, category:'Sedan', transmission:'Automático', priceBand:90, price:null, image:null },
+];
+
+function carIconSVG(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+    <path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13"/>
+    <path d="M3 13h18v4a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-4z"/>
+    <circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/>
+  </svg>`;
+}
+
+function renderVehicles(list){
+  const rail = document.getElementById('vehicleRail');
+  if(!list.length){
+    rail.innerHTML = `<div class="rail-empty">Nenhum veículo nesse filtro no momento. Fale com a SL para conferir chegadas recentes.</div>`;
+    return;
+  }
+  rail.innerHTML = list.map(v => `
+    <article class="vcard">
+      <div class="vcard-media">
+        ${v.image ? `<img src="${v.image}" alt="${v.brand} ${v.model} ${v.year}">` : `<div class="ico">${carIconSVG()}</div>`}
+        <span class="tag">${v.image ? 'Foto real' : 'Foto em breve'}</span>
+      </div>
+      <div class="vcard-body">
+        <div class="vcard-year">${v.year}</div>
+        <div class="vcard-name serif">${v.brand} ${v.model}</div>
+        <div class="vcard-specs">
+          <span>${v.category}</span>
+          ${v.transmission ? `<span>${v.transmission}</span>` : ''}
+        </div>
+        <div class="vcard-price">
+          <b>${v.price ? 'R$ ' + v.price.toLocaleString('pt-BR') : 'Consulte o valor'}</b>
+          <span class="vcard-link">Ver detalhes
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+renderVehicles(vehicles);
+
+let activePrice = 'all', activeCat = 'all';
+function applyFilters(){
+  const filtered = vehicles.filter(v=>{
+    const priceOk = activePrice === 'all' || v.priceBand <= Number(activePrice);
+    const catOk = activeCat === 'all' || v.category === activeCat || v.transmission === activeCat;
+    return priceOk && catOk;
+  });
+  gsap.to('#vehicleRail', { opacity:0, duration:.2, onComplete:()=>{
+    renderVehicles(filtered);
+    gsap.fromTo('#vehicleRail .vcard', {opacity:0, y:14}, {opacity:1, y:0, duration:.5, stagger:.05, ease:'power2.out'});
+    gsap.to('#vehicleRail', { opacity:1, duration:.2 });
+  }});
+}
+document.querySelectorAll('#priceFilters .chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#priceFilters .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activePrice = btn.dataset.price;
+    applyFilters();
+  });
+});
+document.querySelectorAll('#catFilters .chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#catFilters .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    applyFilters();
+  });
+});
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+const mobileMenu = document.getElementById('mobileMenu');
+document.getElementById('menuOpen').addEventListener('click', ()=>mobileMenu.classList.add('open'));
+document.getElementById('menuClose').addEventListener('click', ()=>mobileMenu.classList.remove('open'));
+mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileMenu.classList.remove('open')));
+
+/* =========================================================
+   HEADER SCROLL STATE
+   ========================================================= */
+const headerEl = document.getElementById('siteHeader');
+window.addEventListener('scroll', ()=>{
+  headerEl.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive:true });
+
+/* =========================================================
+   SCROLL PROGRESS BAR
+   ========================================================= */
+const progressFill = document.getElementById('progressFill');
+function updateProgress(){
+  const h = document.documentElement;
+  const scrolled = h.scrollTop;
+  const max = h.scrollHeight - h.clientHeight;
+  progressFill.style.width = (max > 0 ? (scrolled/max)*100 : 0) + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive:true });
+updateProgress();
+
+/* =========================================================
+   CUSTOM CURSOR (desktop, pointer:fine only)
+   ========================================================= */
+const isFinePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+if(isFinePointer){
+  document.body.classList.add('has-cursor');
+  const cursor = document.getElementById('cursor');
+  const label = document.getElementById('cursorLabel');
+  let mx=0,my=0,cx=0,cy=0;
+  window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+  gsap.ticker.add(()=>{
+    cx += (mx-cx)*0.18; cy += (my-cy)*0.18;
+    cursor.style.left = cx+'px'; cursor.style.top = cy+'px';
+    label.style.left = mx+'px'; label.style.top = my+'px';
+  });
+  const cursorMap = { ver:'VER', abrir:'ABRIR', explore:'EXPLORE' };
+  document.querySelectorAll('[data-cursor]').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{
+      const key = el.dataset.cursor;
+      label.textContent = cursorMap[key] || 'VER';
+      label.classList.add('show');
+      cursor.style.width = '14px'; cursor.style.height='14px';
+    });
+    el.addEventListener('mouseleave', ()=>{
+      label.classList.remove('show');
+      cursor.style.width='8px'; cursor.style.height='8px';
+    });
+  });
+  document.querySelectorAll('.vcard-media, .feature-media').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{
+      label.textContent = 'EXPLORE'; label.classList.add('show');
+      cursor.style.width='14px'; cursor.style.height='14px';
+    });
+    el.addEventListener('mouseleave', ()=>{
+      label.classList.remove('show');
+      cursor.style.width='8px'; cursor.style.height='8px';
+    });
+  });
+
+  /* ---- Magnetic buttons ---- */
+  document.querySelectorAll('.btn').forEach(btn=>{
+    btn.addEventListener('mousemove', e=>{
+      const r = btn.getBoundingClientRect();
+      const relX = e.clientX - (r.left + r.width/2);
+      const relY = e.clientY - (r.top + r.height/2);
+      gsap.to(btn, { x: relX*0.28, y: relY*0.45, duration:.5, ease:'power2.out' });
+    });
+    btn.addEventListener('mouseleave', ()=>{
+      gsap.to(btn, { x:0, y:0, duration:.6, ease:'elastic.out(1,0.4)' });
+    });
+  });
+
+  /* ---- 3D tilt on vehicle cards ---- */
+  document.querySelectorAll('.vcard').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width - 0.5;
+      const py = (e.clientY - r.top)/r.height - 0.5;
+      gsap.to(card, {
+        rotateY: px*7, rotateX: -py*7, transformPerspective:800,
+        duration:.5, ease:'power2.out'
+      });
+      gsap.to(card.querySelector('.vcard-media .ico'), {
+        x: px*10, y: py*10, duration:.6, ease:'power2.out'
+      });
+    });
+    card.addEventListener('mouseleave', ()=>{
+      gsap.to(card, { rotateY:0, rotateX:0, duration:.7, ease:'power3.out' });
+      gsap.to(card.querySelector('.vcard-media .ico'), { x:0, y:0, duration:.7 });
+    });
+  });
+}
+
+/* =========================================================
+   HERO VIDEO (HLS)
+   ========================================================= */
+const HERO_SRC = 'https://stream.mux.com/Jwr2RhmsNrd6GEspBNgm02vJsRZAGlaoQIh4AucGdASw.m3u8';
+const video = document.getElementById('heroVideo');
+const heroMedia = document.getElementById('heroMedia');
+const heroFallback = document.getElementById('heroFallback');
+
+function showVideo(){
+  gsap.to(heroMedia, { opacity:1, duration:1.4, ease:'power1.out' });
+}
+// If the video can't load for any reason, the static hero-photo underneath
+// stays visible (it's a real photo, not a placeholder gradient) — heroFallback
+// is only used as a last-resort flat background and stays hidden otherwise.
+try{
+  if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src = HERO_SRC;
+    video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); showVideo(); });
+  } else if(window.Hls && Hls.isSupported()){
+    const hls = new Hls();
+    hls.loadSource(HERO_SRC);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ video.play().catch(()=>{}); showVideo(); });
+  }
+}catch(e){ /* hero-photo remains visible */ }
+
+/* =========================================================
+   GSAP ANIMATIONS
+   ========================================================= */
+gsap.registerPlugin(ScrollTrigger);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- Smooth scroll (Lenis) — wraps native scroll, keeps sticky/pin working ----
+   This is what makes the whole page's scroll pacing feel deliberate/cinematic
+   instead of the abrupt native jump, matching the pacing of the video scrub. */
+let lenis;
+const isTouchDevice = window.matchMedia('(hover:none), (pointer:coarse)').matches;
+if(!reduceMotion && !isTouchDevice && window.Lenis){
+  lenis = new Lenis({
+    duration: 1.35,           // higher = slower, more eased scroll response
+    easing: t => Math.min(1, 1 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+    touchMultiplier: 1.1,
+    anchors: true
+  });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+if(!reduceMotion){
+
+  /* ---- Hero entrance timeline ---- */
+  const heroTl = gsap.timeline({ delay:.15 });
+  heroTl
+    .from('.hero-badge', { opacity:0, scale:.9, duration:.6, ease:'back.out(2)' }, 0)
+    .to('.hero-title .line span', {
+      y:'0%', duration:1.1, ease:'power4.out', stagger:.12
+    }, .1)
+    .fromTo('.hero-title .line span', { y:'110%' }, { y:'0%', duration:1.1, ease:'power4.out', stagger:.12 }, .1)
+    .to('.hero-sub span', { y:'0%', duration:.9, ease:'power3.out' }, .55)
+    .to('.hero-cta .inner', { y:'0%', duration:.9, ease:'power3.out' }, .7)
+    .to('#scrollIndicator', { opacity:1, duration:.8 }, .95);
+
+  gsap.set('.hero-title .line span', { y:'110%' });
+  gsap.set('.hero-sub span', { y:'110%' });
+
+  /* ---- Header nav-cta subtle presence ---- */
+  gsap.from('.nav-inner', { opacity:0, y:-10, duration:1, delay:.1 });
+
+  /* ---- Cinematic statement: word-by-word opacity driven by scroll ---- */
+  gsap.to('.cinematic-title .word', {
+    opacity:1,
+    stagger:.06,
+    scrollTrigger:{
+      trigger:'.cinematic',
+      start:'top 75%',
+      end:'top 20%',
+      scrub:.6
+    }
+  });
+  gsap.to('#cineFollow', {
+    opacity:1, y:0,
+    scrollTrigger:{ trigger:'.cinematic', start:'top 30%', end:'top -10%', scrub:.6 }
+  });
+
+  /* ---- Showroom cards entrance (batch) ---- */
+  ScrollTrigger.batch('.vcard', {
+    start:'top 88%',
+    onEnter: batch => gsap.fromTo(batch, {opacity:0, y:26}, {opacity:1, y:0, duration:.7, stagger:.08, ease:'power2.out'})
+  });
+
+  /* ---- Trust list stagger reveal ---- */
+  gsap.to('.trust-item', {
+    opacity:1, x:0, duration:.7, stagger:.09, ease:'power2.out',
+    scrollTrigger:{ trigger:'.trust-list', start:'top 78%' }
+  });
+
+  /* ---- Featured vehicle pinned parallax ---- */
+  gsap.timeline({
+    scrollTrigger:{ trigger:'.feature', start:'top top', end:'bottom bottom', scrub:.6 }
+  })
+  .fromTo('.feature-content', { y:60, opacity:0 }, { y:0, opacity:1, duration:.4 }, 0)
+  .to('.feature-content', { y:-40, opacity:0, duration:.3 }, .72);
+
+  /* ---- Featured vehicle video: scroll scrubs playback (desktop) ----
+     Official GSAP pattern: tween the video's own `currentTime` property and
+     let ScrollTrigger's numeric `scrub` value (seconds to "catch up") handle
+     the smoothing natively — no manual rAF/lerp loop needed.
+     On phones/tablets (≤900px) `.feature` collapses to 100vh, so there's no
+     scroll runway to scrub against — the video just autoplays/loops instead. */
+  const featureVideo = document.getElementById('featureVideo');
+  const featurePlate = document.getElementById('featurePlate');
+  const isCompactViewport = window.matchMedia('(max-width:900px)').matches;
+  if(featureVideo){
+    if(isCompactViewport){
+      featureVideo.loop = true;
+      featureVideo.muted = true;
+      featureVideo.setAttribute('playsinline','');
+      featureVideo.play().catch(()=>{});
+    } else {
+      featureVideo.addEventListener('loadedmetadata', ()=>{
+        gsap.fromTo(featureVideo, { currentTime:0 }, {
+          currentTime: featureVideo.duration,
+          ease:'none',
+          scrollTrigger:{
+            trigger:'.feature', start:'top top', end:'bottom bottom',
+            scrub:1 // seconds for the video to "catch up" to the scrollbar — raise for gentler, lower for snappier
+          }
+        });
+      });
+    }
+    featureVideo.addEventListener('error', ()=>{
+      gsap.set(featurePlate, { opacity:.5 });
+    });
+  }
+
+  /* ---- Trade-in flow steps ---- */
+  gsap.to('.flow-step', {
+    opacity:1, y:0, duration:.6, stagger:.12, ease:'power2.out',
+    scrollTrigger:{ trigger:'.tradein-flow', start:'top 82%' }
+  });
+
+  /* ---- Section heads general fade-in (single deliberate treatment) ---- */
+  gsap.utils.toArray('.section-head, .fin-panel, .loc-grid, .final-title').forEach(el=>{
+    gsap.from(el, {
+      opacity:0, y:24, duration:.9, ease:'power2.out',
+      scrollTrigger:{ trigger:el, start:'top 85%' }
+    });
+  });
+
+  /* ---- Masked title reveal (clip-path wipe) for large serif headings ---- */
+  gsap.utils.toArray('.section-title, .trust-title, .loc-title, .final-title').forEach(el=>{
+    gsap.fromTo(el,
+      { clipPath:'inset(0 0 100% 0)', y:16 },
+      { clipPath:'inset(0 0 0% 0)', y:0, duration:1.1, ease:'power3.out',
+        scrollTrigger:{ trigger:el, start:'top 88%' } }
+    );
+  });
+
+  /* ---- Depth parallax: hero title drifts slower than the video on scroll-out ---- */
+  gsap.to('.hero-inner', {
+    y:-90, opacity:0,
+    scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:.4 }
+  });
+  gsap.to('.hero-media video', {
+    y:-40, scale:1.12,
+    scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:.4 }
+  });
+  gsap.to('.hero-photo img', {
+    y:-30, scale:1.14,
+    scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:.4 }
+  });
+
+  /* ---- Parallax depth on section eyebrows / numbers (move slightly against scroll) ---- */
+  gsap.utils.toArray('.section-num').forEach(el=>{
+    gsap.fromTo(el, { y:26 }, {
+      y:-16, ease:'none',
+      scrollTrigger:{ trigger:el, start:'top bottom', end:'bottom top', scrub:.5 }
+    });
+  });
+
+  /* ---- Showroom rail: gentle depth drift on the whole rail as section scrolls into view ---- */
+  gsap.fromTo('#vehicleRail', { x:-24 }, {
+    x:0, ease:'none',
+    scrollTrigger:{ trigger:'.showroom', start:'top bottom', end:'top 40%', scrub:.6 }
+  });
+
+  /* ---- Reviews: animated count-up on the score ---- */
+  const scoreEl = document.querySelector('.reviews-score');
+  if(scoreEl){
+    const counter = { val:0 };
+    ScrollTrigger.create({
+      trigger:'.reviews', start:'top 75%', once:true,
+      onEnter:()=> gsap.to(counter, {
+        val:4.7, duration:1.6, ease:'power2.out',
+        onUpdate:()=>{ scoreEl.textContent = counter.val.toFixed(1).replace('.', ','); }
+      })
+    });
+  }
+
+  /* ---- Location map: scale + fade in as it enters ---- */
+  gsap.fromTo('.loc-map', { opacity:0, scale:1.04 }, {
+    opacity:1, scale:1, duration:1, ease:'power2.out',
+    scrollTrigger:{ trigger:'.loc-map', start:'top 85%' }
+  });
+
+  /* ---- Financing panel: soft clip reveal ---- */
+  gsap.fromTo('.fin-panel', { clipPath:'inset(4% 4% 4% 4%)' }, {
+    clipPath:'inset(0% 0% 0% 0%)', duration:.9, ease:'power2.out',
+    scrollTrigger:{ trigger:'.fin-panel', start:'top 85%' }
+  });
+
+} else {
+  // Reduced motion: reveal everything immediately, no scroll-tied animation
+  gsap.set('.hero-title .line span, .hero-sub span', { y:'0%' });
+  gsap.set('.hero-cta .inner, .hero-badge, #scrollIndicator, .cinematic-title .word, #cineFollow, .trust-item, .flow-step', { opacity:1, x:0, y:0 });
+  heroMedia.style.opacity = 1;
+  heroFallback.style.display = 'none';
+}
+
+/* =========================================================
+   FINANCING SIMULATOR
+   ========================================================= */
+const finValue = document.getElementById('finValue');
+const finDown = document.getElementById('finDown');
+const finValueOut = document.getElementById('finValueOut');
+const finDownOut = document.getElementById('finDownOut');
+const finResult = document.getElementById('finResult');
+let term = 48;
+
+function fmt(n){ return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); }
+
+function calc(){
+  const value = Number(finValue.value);
+  const down = Math.min(Number(finDown.value), value);
+  const financed = Math.max(value - down, 0);
+  // Illustrative estimate only — not a real financial offer.
+  const monthlyRate = 0.017;
+  const installment = financed > 0
+    ? (financed * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term))
+    : 0;
+  finValueOut.textContent = fmt(value);
+  finDownOut.textContent = fmt(down);
+  finResult.textContent = fmt(installment);
+}
+finValue.addEventListener('input', calc);
+finDown.addEventListener('input', calc);
+document.querySelectorAll('.term-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.term-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    term = Number(btn.dataset.term);
+    calc();
+  });
+});
+calc();
+
+/* =========================================================
+   LUCIDE ICONS (if any [data-lucide] tags used elsewhere)
+   ========================================================= */
+if(window.lucide){ lucide.createIcons(); }
+</script>
+</body>
+</html>
